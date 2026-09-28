@@ -947,15 +947,36 @@ $("demoBtn").addEventListener("click",function(){
   window.OL_READY=true;
 })();
 })();
-</script>
 <script>
-/* Makes the game installable ("Add to Home Screen") — safe to leave in even where it can't
-   run (e.g. Koder's preview, which doesn't serve over https), it just quietly does nothing there. */
-if ("serviceWorker" in navigator && location.protocol==="https:") {
-  window.addEventListener("load", function(){
-  navigator.serviceWorker.register("service-worker.js").catch(function(){});
-    
+let deferredPrompt;
+const installBtn = document.getElementById("installBtn");
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.hidden = false;
+});
+
+installBtn.addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+
+  deferredPrompt = null;
+  installBtn.hidden = true;
+});
+
+window.addEventListener("appinstalled", () => {
+  installBtn.hidden = true;
+});
+
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js");
+  });
 }
 </script>
+
 </body>
 </html>
