@@ -195,6 +195,16 @@ textarea{
 .rules-body b{color:var(--ink)}
 .credit{margin:18px 4px 0;text-align:center;color:var(--muted);font-size:13px;font-weight:500;line-height:1.5}
 .credit a{color:var(--muted)}
+.sponsor-banner{
+  display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+  margin:14px 4px 0;padding:14px 18px;border-radius:20px;
+  background:var(--card);border:1.5px solid var(--card-line);
+  text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.sponsor-banner:active{transform:scale(.98)}
+.sponsor-label{color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.sponsor-text{color:var(--gold);font-weight:800;font-size:15px}
+.sponsor-img{max-height:32px;max-width:160px;display:block}
 .guess-wrap{position:relative}
 .suggest-list{position:absolute;left:0;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;
   background:#0c1424;border:1.5px solid var(--card-line);border-radius:20px;z-index:5;
@@ -203,6 +213,55 @@ textarea{
   cursor:pointer;-webkit-tap-highlight-color:transparent}
 .suggest-list li:active{background:#182338}
 .suggest-list li small{display:block;color:var(--muted);font-weight:500;font-size:12px;margin-top:1px}
+
+/* ---------- Profile / avatar / achievements ---------- */
+.profile-head{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:14px}
+.avatar-big{
+  width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:40px;background:#0c1424;border:2px solid var(--card-line);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.avatar-big:active{transform:scale(.95)}
+.profile-name{font-weight:800;font-size:17px;color:var(--ink)}
+.avatar-pick-label{text-align:center;color:var(--muted);font-size:13px;font-weight:600;margin:10px 0 0}
+.avatar-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:10px 0 0}
+.avatar-grid button{
+  aspect-ratio:1;border-radius:14px;border:1.5px solid var(--card-line);background:#0c1424;
+  font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.avatar-grid button.active{border-color:var(--gold);background:#1c2338}
+.profile-stats{margin-top:18px}
+.achv-heading{
+  margin:20px 0 10px;color:var(--gold);font-size:14px;text-transform:uppercase;letter-spacing:.04em;
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+#achvCount{color:var(--muted);font-size:12px;text-transform:none;letter-spacing:0;font-weight:600}
+.achv-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;
+  max-height:260px;overflow-y:auto}
+.achv-list li{display:flex;align-items:center;gap:12px;background:#0c1424;border-radius:16px;padding:10px 14px}
+.achv-list .achv-icon{font-size:24px;width:30px;text-align:center;flex:none}
+.achv-list.locked .achv-icon{filter:grayscale(1);opacity:.45}
+.achv-list li.locked .achv-icon{filter:grayscale(1);opacity:.4}
+.achv-list li.locked{opacity:.55}
+.achv-body{flex:1;min-width:0}
+.achv-title{font-weight:800;font-size:14px;color:var(--ink)}
+.achv-desc{display:block;color:var(--muted);font-size:12px;margin-top:1px}
+
+.toast{
+  position:fixed;left:16px;right:16px;top:calc(env(safe-area-inset-top,0px) + 14px);
+  z-index:20;display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1.5px solid var(--gold);border-radius:20px;padding:12px 16px;
+  box-shadow:0 14px 30px rgba(0,0,0,.5);
+  animation:toastIn .35s ease, toastOut .35s ease 2.4s forwards;
+}
+.toast-icon{font-size:26px}
+.toast-text{display:flex;flex-direction:column}
+.toast-text strong{color:var(--gold);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.toast-text span{color:var(--ink);font-weight:800;font-size:15px}
+@keyframes toastIn{from{transform:translateY(-16px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
+@media (prefers-reduced-motion:reduce){ .toast{animation:none} }
 </style>
 </head>
 <body>
@@ -232,7 +291,7 @@ textarea{
   </header>
 
   <section class="card" aria-label="Game">
-    <p class="whoami">Playing as <button class="link" id="nameBtn" type="button"><span id="nameVal">Player</span> ✏️</button> · <button class="link" id="rulesBtn" type="button">📖 Rules</button> · <button class="link" id="soundBtn" type="button">🔊</button></p>
+    <p class="whoami">Playing as <button class="link" id="nameBtn" type="button"><span id="nameVal">Player</span> ✏️</button> · <button class="link" id="rulesBtn" type="button">📖 Rules</button> · <button class="link" id="soundBtn" type="button">🔊</button> · <button class="link" id="profileBtn" type="button"><span id="avatarVal">🏉</span> Profile</button></p>
     <div class="pills">
       <label class="pill" id="eraPill"><span>Year</span><span class="v" id="eraVal">—</span>
         <select id="eraSel" aria-label="Year"></select></label>
@@ -294,6 +353,12 @@ textarea{
     </details>
   </section>
   <p class="credit">Player data from <a href="https://www.rugbyleagueproject.org" target="_blank" rel="noopener">Rugby League Project</a>. Spot an issue, or want something removed? <a href="mailto:Joey.alchin1@gmail.com">Email Joey</a>.</p>
+
+  <a class="sponsor-banner" id="sponsorBanner" href="#" target="_blank" rel="noopener sponsored" hidden>
+    <span class="sponsor-label">Presented by</span>
+    <img class="sponsor-img" id="sponsorImg" alt="" hidden>
+    <span class="sponsor-text" id="sponsorText"></span>
+  </a>
 </main>
 
 <div class="overlay" id="win" hidden>
@@ -342,6 +407,30 @@ textarea{
     </div>
     <button class="lock" id="rulesCloseBtn" type="button">Close</button>
   </div>
+</div>
+
+<div class="overlay" id="profile" hidden>
+  <div class="dialog board-dialog" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+    <h2 id="profileTitle">Your profile</h2>
+    <div class="profile-head">
+      <button class="avatar-big" id="avatarBig" type="button" aria-label="Current avatar">🏉</button>
+      <div class="profile-name" id="profileName">Player</div>
+    </div>
+    <p class="avatar-pick-label">Tap the avatar to change it</p>
+    <div class="avatar-grid" id="avatarGrid" hidden></div>
+    <div class="stats profile-stats">
+      <div class="stat"><span>Lifetime pts</span><b id="statLifetime">0</b></div>
+      <div class="stat"><span>Best Blitz</span><b id="statBestBlitz">0</b></div>
+    </div>
+    <h3 class="achv-heading">Achievements <span id="achvCount">0/8</span></h3>
+    <ul class="achv-list" id="achvList"></ul>
+    <button class="lock" id="profileCloseBtn" type="button">Close</button>
+  </div>
+</div>
+
+<div class="toast" id="achvToast" hidden>
+  <span class="toast-icon" id="toastIcon">🏅</span>
+  <div class="toast-text"><strong>Achievement unlocked</strong><span id="toastTitle"></span></div>
 </div>
 
 <script>
@@ -488,7 +577,7 @@ function buildHardcoreRoster(team){
 
 /* ---------- State ---------- */
 var S = {
-  data:null, isDemo:true, name:"Player",
+  data:null, isDemo:true, name:"Player", avatar:"🏉",
   era:"", mode:"classic", blitzSecs:60,
   team:null, roster:[], found:[], foundSet:{},
   roundPts:0, total:0, answers:0, round:1,
@@ -514,6 +603,87 @@ function loadName(){
   return n;
 }
 function renderName(){ $("nameVal").textContent=S.name; }
+
+/* ---------- Avatar (a fixed emoji set — no uploads, so nothing to moderate) ---------- */
+var AVATARS=["🏉","🏆","⭐","🔥","💪","🦘","🐨","🦅","🦁","🐺","🐯","🦈","⚡","🎯","😎","🥳","👑","🤙"];
+function loadAvatar(){
+  var a=store.get("ol_avatar");
+  return (a && AVATARS.indexOf(a)!==-1) ? a : AVATARS[0];
+}
+function renderAvatar(){ $("avatarVal").textContent=S.avatar; $("avatarBig").textContent=S.avatar; }
+function setAvatar(a){ S.avatar=a; store.set("ol_avatar",a); renderAvatar(); renderAvatarGrid(); }
+function renderAvatarGrid(){
+  var g=$("avatarGrid"); g.textContent="";
+  AVATARS.forEach(function(a){
+    var b=document.createElement("button"); b.type="button"; b.textContent=a;
+    if (a===S.avatar) b.className="active";
+    b.addEventListener("click",function(){ setAvatar(a); sndClick(); });
+    g.appendChild(b);
+  });
+}
+
+/* ---------- Achievements (tracked on this device, alongside the rest of the local stats) ---------- */
+var ACHIEVEMENTS=[
+  {id:"first",      icon:"🎖️", title:"First Points",     desc:"Score your first points, any mode"},
+  {id:"classicwin",  icon:"🏆", title:"250 Club",         desc:"Win a game of Classic"},
+  {id:"onegamer",    icon:"💎", title:"One-Game Wonder",  desc:"Correctly name a genuine 1-game player"},
+  {id:"blitz10",     icon:"⚡", title:"Blitz Master",     desc:"Name 10+ players in a single Blitz round"},
+  {id:"historian",   icon:"📚", title:"Club Historian",   desc:"Name 20+ players for one club in League Legend"},
+  {id:"legend",      icon:"🌟", title:"Legend Spotted",   desc:"Correctly name a real legend in League Legend"},
+  {id:"triple",      icon:"🎯", title:"Triple Threat",    desc:"Play a round in all three modes"},
+  {id:"highroller",  icon:"🔥", title:"High Roller",      desc:"Reach 1000 lifetime points"}
+];
+function getUnlocked(){ try{ return JSON.parse(store.get("ol_achievements")||"[]"); }catch(e){ return []; } }
+function unlockAchievement(id){
+  var list=getUnlocked();
+  if (list.indexOf(id)!==-1) return;
+  list.push(id); store.set("ol_achievements",JSON.stringify(list));
+  var a=ACHIEVEMENTS.filter(function(x){ return x.id===id; })[0];
+  if (a) showToast(a);
+  renderAchvList();
+}
+function showToast(a){
+  sndAchieve();
+  $("toastIcon").textContent=a.icon; $("toastTitle").textContent=a.title;
+  var t=$("achvToast");
+  t.hidden=false;
+  t.classList.remove("toast"); void t.offsetWidth; t.classList.add("toast");   // restarts the CSS animation
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer=setTimeout(function(){ t.hidden=true; },2900);
+}
+function addLifetimePts(n){
+  var v=parseInt(store.get("ol_lifetime")||"0",10)+n;
+  store.set("ol_lifetime",String(v));
+  if (v>=1000) unlockAchievement("highroller");
+}
+function markModePlayed(mode){
+  var list; try{ list=JSON.parse(store.get("ol_modes")||"[]"); }catch(e){ list=[]; }
+  if (list.indexOf(mode)===-1){ list.push(mode); store.set("ol_modes",JSON.stringify(list)); }
+  if (list.length>=3) unlockAchievement("triple");
+}
+function renderAchvList(){
+  var unlocked=getUnlocked();
+  $("achvCount").textContent=unlocked.length+"/"+ACHIEVEMENTS.length;
+  var ul=$("achvList"); ul.textContent="";
+  ACHIEVEMENTS.forEach(function(a){
+    var got=unlocked.indexOf(a.id)!==-1;
+    var li=document.createElement("li"); if (!got) li.className="locked";
+    var icon=document.createElement("span"); icon.className="achv-icon"; icon.textContent=got?a.icon:"🔒";
+    var body=document.createElement("div"); body.className="achv-body";
+    var title=document.createElement("span"); title.className="achv-title"; title.textContent=a.title;
+    var desc=document.createElement("small"); desc.className="achv-desc"; desc.textContent=a.desc;
+    body.appendChild(title); body.appendChild(desc);
+    li.appendChild(icon); li.appendChild(body);
+    ul.appendChild(li);
+  });
+}
+function renderProfile(){
+  $("profileName").textContent=S.name;
+  $("statLifetime").textContent=store.get("ol_lifetime")||"0";
+  $("statBestBlitz").textContent=store.get("ol_best")||"0";
+  renderAvatarGrid();
+  renderAchvList();
+}
 
 /* ---------- Optional global leaderboard (Firebase Firestore) ----------
    Leave FIREBASE_CONFIG as {} to keep the leaderboard local to this device (the original
@@ -565,7 +735,8 @@ function boardAdd(entry){
   if (fireDb){
     fireDb.collection("leaderboard_"+entry.mode).add({
       name:String(entry.name||"Player").slice(0,24), pts:entry.pts,
-      meta:String(entry.meta||"").slice(0,120), date:entry.date
+      meta:String(entry.meta||"").slice(0,120), date:entry.date,
+      avatar:String(entry.avatar||"🏉").slice(0,4)
     }).catch(function(){});
   }
 }
@@ -597,7 +768,8 @@ function renderBoard(mode){
     list.forEach(function(e,i){
       var li=document.createElement("li");
       var rank=document.createElement("span"); rank.className="rank"; rank.textContent="#"+(i+1);
-      var who=document.createElement("span"); who.className="who"; who.textContent=e.name||"Player";
+      var who=document.createElement("span"); who.className="who";
+      who.textContent=(e.avatar?e.avatar+" ":"")+(e.name||"Player");
       if (e.meta){ var sm=document.createElement("small"); sm.textContent=e.meta; who.appendChild(sm); }
       var pts=document.createElement("span"); pts.className="pts"; pts.textContent=e.pts;
       li.appendChild(rank); li.appendChild(who); li.appendChild(pts);
@@ -728,6 +900,23 @@ function actx(){
   if (audioCtx && audioCtx.state==="suspended") audioCtx.resume();
   return audioCtx;
 }
+/* iOS Safari only allows an AudioContext to actually start if it's created (or resumed)
+   directly inside a real tap/click — not from a timer that merely followed one, which is
+   exactly how the team-draw "tick" sound fires. So grab it on the very first tap anywhere,
+   before anything else gets a chance to try and silently fail. */
+function unlockAudio(){
+  var ctx=actx();
+  if (ctx){
+    try{
+      var b=ctx.createBuffer(1,1,22050), s=ctx.createBufferSource();
+      s.buffer=b; s.connect(ctx.destination); s.start(0);
+    }catch(e){}
+  }
+  document.removeEventListener("pointerdown",unlockAudio);
+  document.removeEventListener("touchstart",unlockAudio);
+}
+document.addEventListener("pointerdown",unlockAudio);
+document.addEventListener("touchstart",unlockAudio);
 function tone(freq,dur,type,vol,delay){
   if (!soundOn) return;
   var ctx=actx(); if (!ctx) return;
@@ -749,6 +938,7 @@ function sndWrong(){ tone(160,0.22,"sawtooth",0.11); }
 function sndSoft(){ tone(500,0.06,"sine",0.06); }
 function sndRoundEnd(){ tone(330,0.15,"triangle",0.1); tone(220,0.22,"triangle",0.1,0.11); }
 function sndWin(){ [523,659,784,1047].forEach(function(f,i){ tone(f,0.18,"triangle",0.14,i*0.09); }); }
+function sndAchieve(){ tone(784,0.1,"triangle",0.13); tone(988,0.14,"triangle",0.13,0.07); }
 function renderSoundBtn(){ $("soundBtn").textContent = soundOn ? "🔊" : "🔇"; }
 $("soundBtn").addEventListener("click",function(){
   soundOn=!soundOn; store.set("ol_sound",soundOn?"on":"off"); renderSoundBtn();
@@ -756,9 +946,13 @@ $("soundBtn").addEventListener("click",function(){
 });
 /* one shared "click" for plain utility buttons, so every one of them doesn't need its own call */
 ["hintBtn","giveUpBtn","newGameBtn","winBtn","winBoardBtn","nameBtn","boardBtn",
- "tabClassic","tabBlitz","tabHardcore","boardCloseBtn","rulesBtn","rulesCloseBtn"].forEach(function(id){
+ "tabClassic","tabBlitz","tabHardcore","boardCloseBtn","rulesBtn","rulesCloseBtn",
+ "profileBtn","profileCloseBtn","avatarBig"].forEach(function(id){
   $(id).addEventListener("click",sndClick);
 });
+$("profileBtn").addEventListener("click",function(){ renderProfile(); $("avatarGrid").hidden=true; $("profile").hidden=false; });
+$("profileCloseBtn").addEventListener("click",function(){ $("profile").hidden=true; });
+$("avatarBig").addEventListener("click",function(){ $("avatarGrid").hidden=!$("avatarGrid").hidden; });
 
 /* ---------- Round flow ---------- */
 function clearRound(){
@@ -815,6 +1009,7 @@ function startRound(team){
     $("teamVal").textContent=team;
   }
   S.found=[]; S.foundSet={}; S.roundPts=0; S.hints=3; S.hinted={}; S.revealed=false; S.active=true;
+  markModePlayed(S.mode);
   if (S.mode==="blitz"){
     startTimer();
     say("Go! Name any player with under 20 "+unit()+" from "+S.era+" — any club.","info");
@@ -836,13 +1031,15 @@ function endRound(reason){
     if (S.roundPts>best){ store.set("ol_best",String(S.roundPts)); extra=" New best round!"; }
     else if (best>0) extra=" Best round: "+best+".";
     if (S.roundPts>0){
-      boardAdd({name:S.name, mode:"blitz", pts:S.roundPts, meta:S.era+" · "+S.blitzSecs+"s", date:Date.now()});
+      boardAdd({name:S.name, avatar:S.avatar, mode:"blitz", pts:S.roundPts, meta:S.era+" · "+S.blitzSecs+"s", date:Date.now()});
     }
+    if (S.found.length>=10) unlockAchievement("blitz10");
     say("Time! "+S.found.length+(S.found.length===1?" player":" players")+", "+S.roundPts+" pts."+extra,"info");
   } else {
     if (S.mode==="hardcore" && S.roundPts>0){
-      boardAdd({name:S.name, mode:"hardcore", pts:S.roundPts, meta:S.team+" · "+S.found.length+(S.found.length===1?" player":" players"), date:Date.now()});
+      boardAdd({name:S.name, avatar:S.avatar, mode:"hardcore", pts:S.roundPts, meta:S.team+" · "+S.found.length+(S.found.length===1?" player":" players"), date:Date.now()});
     }
+    if (S.mode==="hardcore" && S.found.length>=20) unlockAchievement("historian");
     say((S.mode==="classic"||S.mode==="hardcore")?"Round over. Here's who you missed.":"Round over.","info");
   }
   renderList(); renderStats();
@@ -894,6 +1091,10 @@ function submit(){
   S.roundPts+=pts; S.total+=pts; S.answers++;
   sndCorrect();
   say(p.name+(p.team?" ("+p.team+")":"")+" · "+gamesText(p)+" · +"+pts,"ok");
+  addLifetimePts(pts);
+  unlockAchievement("first");
+  if (gm(p)===1) unlockAchievement("onegamer");
+  if (S.mode==="hardcore" && gm(p)>100) unlockAchievement("legend");
   inp.value="";
   renderList(); renderStats();
   if (S.mode==="classic" && S.total>=WIN_SCORE) win();
@@ -912,9 +1113,10 @@ function hint(){
 function win(){
   hideSuggest();
   sndWin();
+  unlockAchievement("classicwin");
   S.active=false; S.revealed=false; renderStats();
   var roundsTxt=S.round+(S.round===1?" round":" rounds");
-  boardAdd({name:S.name, mode:"classic", pts:S.total, meta:roundsTxt+" · "+S.answers+" answers", date:Date.now()});
+  boardAdd({name:S.name, avatar:S.avatar, mode:"classic", pts:S.total, meta:roundsTxt+" · "+S.answers+" answers", date:Date.now()});
   $("winText").textContent="You hit "+S.total+" points in "+roundsTxt+" with "+S.answers+" answers.";
   $("win").hidden=false; $("winBtn").focus();
 }
@@ -991,6 +1193,7 @@ $("demoBtn").addEventListener("click",function(){
   else { S.data=b.parsed; S.isDemo=b.demo; }
   if (BUILTIN && !ADMIN) $("dataBox").hidden=true;
   S.name=loadName(); renderName(); renderSoundBtn();
+  S.avatar=loadAvatar(); renderAvatar();
   renderEraOptions(); renderMode(); renderDataStatus(); renderList(); renderStats();
   window.OL_READY=true;
 })();
