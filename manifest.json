@@ -2,7 +2,7 @@
   "name": "The Obscurity League",
   "short_name": "Obscurity League",
   "description": "Name the obscure players. The Ruck Infringement Podcast presents.",
-  "start_url": "./index.html",
+  "start_url": "./game.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#080d19",
