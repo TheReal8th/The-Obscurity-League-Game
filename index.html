@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>The Obscurity League — Name the Obscure Players</title>
+<meta name="description" content="A free rugby league and cricket trivia game. 8 rugby league modes — every NRL club, every RLWC nation, both State of Origin sides and Ruck Trivia — plus new cricket modes: Big Bash, Test Match Classic and Cricket God. New Daily Challenge every day.">
+<link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:title" content="The Obscurity League">
+<meta property="og:description" content="Name the obscure rugby league players — and now cricketers. Free trivia game with 8 rugby league modes plus new cricket modes.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="icon-512.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Obscurity League">
+<meta name="twitter:description" content="Name the obscure rugby league players — and now cricketers. Free trivia game with 8 rugby league modes plus new cricket modes.">
+<meta name="twitter:image" content="icon-512.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy-top:#243b63; --navy-bottom:#080d19; --card:#111a2c; --card-line:#26385c; --well:#0c1424;
+  --ink:#f3f5fb; --muted:#9aa7c2; --gold:#edc55a; --gold-ink:#141414;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Inter",sans-serif;color:var(--ink);
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 1px, transparent 1px 54px),
+    linear-gradient(180deg,var(--navy-top) 0%,var(--navy-bottom) 55%,#060b16 100%);
+  background-attachment:fixed;
+  min-height:100vh;
+}
+a{color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+/* ---- nav ---- */
+nav{
+  display:flex;align-items:center;justify-content:space-between;padding:18px 20px;max-width:720px;margin:0 auto;
+}
+.brand{font-weight:900;text-transform:uppercase;letter-spacing:-.02em;font-size:15px}
+.brand .gold{color:var(--gold)}
+.nav-links{display:flex;gap:18px;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+.nav-links a:hover{color:var(--ink)}
+@media (max-width:480px){ .nav-links{display:none} }
+/* ---- hero ---- */
+.hero{text-align:center;padding:36px 20px 48px}
+.hero img{width:96px;height:96px;border-radius:24px;box-shadow:0 0 40px rgba(237,197,90,.25)}
+.eyebrow{margin-top:18px;color:var(--gold);font-weight:800;letter-spacing:.3em;font-size:13px;text-transform:uppercase}
+h1.title{
+  margin-top:14px;font-weight:900;text-transform:uppercase;line-height:.95;letter-spacing:-.02em;
+  font-size:52px;text-shadow:4px 4px 0 #000;
+}
+.hero p.sub{
+  margin:20px auto 0;color:#c9d3e8;font-weight:600;font-size:17px;line-height:1.55;max-width:460px;
+}
+.cta{
+  display:inline-flex;align-items:center;gap:8px;margin-top:30px;
+  background:var(--gold);color:var(--gold-ink);font-weight:900;font-size:19px;text-transform:uppercase;
+  padding:16px 36px;border-radius:999px;text-decoration:none;letter-spacing:.01em;
+}
+.cta:active{transform:scale(.97)}
+.cta-note{margin-top:14px;color:var(--muted);font-weight:600;font-size:13px;letter-spacing:.02em}
+/* ---- section shells ---- */
+section{padding:48px 0}
+section h2{
+  font-weight:900;text-transform:uppercase;letter-spacing:-.01em;font-size:28px;text-align:center;
+  text-shadow:3px 3px 0 #000;
+}
+section .lede{color:var(--muted);text-align:center;font-weight:600;font-size:15px;margin-top:10px;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.5}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--card-line),transparent);max-width:720px;margin:0 auto}
+/* ---- modes grid ---- */
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:30px}
+@media (max-width:560px){ .modes{grid-template-columns:1fr} }
+.mode-card{
+  background:var(--card);border:1.5px solid var(--card-line);border-radius:18px;padding:18px;position:relative;
+}
+.mode-card .icon{font-size:26px}
+.mode-card h3{font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;margin-top:8px}
+.mode-card p{color:var(--muted);font-size:13.5px;line-height:1.5;margin-top:6px}
+/* Ruck Trivia — the showcase mode, sat first with its own gold/fire treatment so it reads as the
+   one to try, not just another card in the list (same gradient-border trick as its in-game tile). */
+.mode-card-featured{
+  border:2px solid transparent;
+  background:
+    linear-gradient(var(--card),var(--card)) padding-box,
+    linear-gradient(135deg,var(--gold),#ff7b3d 55%,var(--gold)) border-box;
+}
+.mode-card-featured .icon{font-size:30px}
+.mode-card-featured h3{
+  background:linear-gradient(90deg,var(--gold),#ff9a5a);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.mode-card-featured .showcase-tag{
+  position:absolute;top:16px;right:16px;font-size:10px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 10px;border-radius:999px;background:linear-gradient(90deg,var(--gold),#ff7b3d);color:#141414;
+}
+.mode-card-cricket{
+  border:2px solid transparent;
+  background:
+    linear-gradient(var(--card),var(--card)) padding-box,
+    linear-gradient(135deg,#0d5a9e,#4fd1ff 55%,#edc55a) border-box;
+}
+.mode-card-cricket .showcase-tag{
+  position:absolute;top:16px;right:16px;font-size:10px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 10px;border-radius:999px;background:linear-gradient(90deg,#4fd1ff,var(--gold));color:#141414;
+}
+.diff{
+  position:absolute;top:16px;right:16px;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  padding:4px 10px;border-radius:999px;
+}
+.diff-easy{background:rgba(95,211,154,.15);color:var(--good,#5fd39a)}
+.diff-medium{background:rgba(237,197,90,.15);color:var(--gold)}
+.diff-hard{background:rgba(239,123,123,.15);color:var(--bad,#ef7b7b)}
+.diff-hardest{background:#ef7b7b;color:#2a0e0e}
+/* ---- fact of the day ---- */
+.fact-card{
+  background:linear-gradient(135deg,#2a2210,#1a1608);border:2px solid var(--gold);border-radius:20px;
+  padding:24px 26px;margin-top:28px;text-align:center;
+  box-shadow:0 0 0 1px rgba(237,197,90,.15),0 12px 28px rgba(237,197,90,.12);
+}
+.fact-label{
+  display:block;color:var(--gold);font-weight:900;font-size:14px;text-transform:uppercase;
+  letter-spacing:.1em;margin-bottom:10px;
+}
+.fact-text{color:var(--ink);font-size:17px;font-weight:700;line-height:1.5;max-width:560px;margin:0 auto}
+/* ---- ruck pass ---- */
+.pass-card{
+  background:linear-gradient(135deg,#2a1f0a,#1a1406);border:1.5px solid var(--gold);border-radius:20px;
+  padding:28px 24px;margin-top:28px;text-align:center;
+}
+.pass-card h3{color:var(--gold);font-weight:900;text-transform:uppercase;font-size:20px;letter-spacing:-.01em}
+.pass-card ul{list-style:none;margin:16px 0 0;text-align:left;max-width:380px;margin-left:auto;margin-right:auto}
+.pass-card li{color:#ddd7bd;font-size:14px;font-weight:600;padding:6px 0 6px 24px;position:relative;line-height:1.4}
+.pass-card li::before{content:"✓";position:absolute;left:0;color:var(--gold);font-weight:900}
+.pass-cta{
+  display:inline-block;margin-top:20px;background:var(--gold);color:var(--gold-ink);font-weight:900;
+  font-size:15px;text-transform:uppercase;padding:13px 30px;border-radius:999px;text-decoration:none;
+}
+/* ---- home screen steps ---- */
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px}
+@media (max-width:560px){ .steps{grid-template-columns:1fr} }
+.step-col{background:var(--well);border:1.5px solid var(--card-line);border-radius:16px;padding:20px}
+.step-col h4{font-weight:800;text-transform:uppercase;font-size:14px;letter-spacing:.03em;color:var(--gold)}
+.step-col ol{margin:12px 0 0 18px;color:#c9d3e8;font-size:13.5px;line-height:1.7}
+/* ---- socials / support ---- */
+.pill-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:22px}
+.pill-link{
+  display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--card-line);
+  border-radius:999px;padding:11px 20px;font-weight:700;font-size:13.5px;text-decoration:none;color:var(--ink);
+}
+/* ---- footer ---- */
+footer{padding:40px 20px 56px;text-align:center}
+footer .credit{color:var(--muted);font-size:12.5px;line-height:1.7;max-width:480px;margin:0 auto}
+footer .credit a{color:#c9d3e8;text-decoration:underline}
+footer .brandline{margin-top:18px;color:#6f7d9c;font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">THE OBSCURITY <span class="gold">LEAGUE</span></div>
+  <div class="nav-links">
+    <a href="#modes">Modes</a>
+    <a href="#ruckpass">Ruck Pass</a>
+    <a href="game.html">Play</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <img src="icon-512.png" alt="The Obscurity League">
+  <div class="eyebrow">The Ruck Infringement Podcast Presents</div>
+  <h1 class="title">The Obscurity<br><span style="color:var(--gold)">League</span></h1>
+  <p class="sub">How many rugby league players can you actually name? Not just the stars — <b style="color:var(--gold)">everyone</b>. Free trivia, 8 rugby league modes, a new Daily Challenge every single day — and now introducing <b style="color:var(--gold)">cricket</b> 🏏.</p>
+  <a class="cta" href="game.html">🏉 Play Now</a>
+  <div class="cta-note">Free to play · No sign-up · Works straight from your phone</div>
+</div>
+
+<div class="wrap">
+  <div class="fact-card" id="factCard">
+    <span class="fact-label">🧠 Obscure Fact of the Day</span>
+    <p class="fact-text" id="factText"></p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<section id="modes">
+  <div class="wrap">
+    <h2>8 Rugby League Modes</h2>
+    <p class="lede">From a gentle warm-up to the toughest recall test in the game. Pick your level.</p>
+    <div class="modes">
+      <div class="mode-card mode-card-featured">
+        <span class="showcase-tag">New</span>
+        <div class="icon">🧠</div>
+        <h3>Ruck Trivia</h3>
+        <p>No club to search — just a clue (club games, caps, Origin appearances) and a name to work out. 437 real clues, only 6 wrong guesses allowed.</p>
+      </div>
+      <div class="mode-card">
+        <div class="icon">🎯</div>
+        <h3>Classic</h3>
+        <p>Pick an era, draw a random club, name the players — the more obscure, the more it's worth. Race to 500.</p>
+      </div>
+      <div class="mode-card">
+        <div class="icon">⚡</div>
+        <h3>Blitz</h3>
+        <p>Every club in an era, but only players under 20 games count. 60 or 90 seconds — no suggestions, no mercy.</p>
+      </div>
+      <div class="mode-card">
+        <div class="icon">🏆</div>
+        <h3>League Legend</h3>
+        <p>One club, every era they've ever played. 10 minutes, but only 8 wrong guesses before it's over.</p>
+      </div>
+      <div class="mode-card">
+        <div class="icon">🔥</div>
+        <h3>Daily Challenge</h3>
+        <p>Same club and season for everyone, once a day — name the finals squad of, say, Penrith 2021. 5 minutes and one shared leaderboard.</p>
+      </div>
+      <div class="mode-card">
+        <div class="icon">👑</div>
+        <h3>Rugby League God</h3>
+        <p>One random club, 5 guesses total. Right or wrong, every guess costs a turn. Hit 300 or it's over.</p>
+      </div>
+      <div class="mode-card">
+        <div class="icon">🌏</div>
+        <h3>RLWC Mode</h3>
+        <p>9 World Cup nations, capped internationals since 1998. Only 5 wrong guesses across the whole game.</p>
+      </div>
+      <div class="mode-card">
+        <div class="icon">⚔️</div>
+        <h3>State of Origin</h3>
+        <p>Pick NSW or QLD and name anyone who's pulled on the jersey since 1998. One-gamers are worth the most.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="cricket">
+  <div class="wrap">
+    <h2>🏏 Now Introducing Cricket</h2>
+    <p class="lede">Flip the sport toggle in the game and name Big Bash and Australian Test players the same obscure-first way.</p>
+    <div class="modes">
+      <div class="mode-card mode-card-cricket">
+        <span class="showcase-tag">New</span>
+        <div class="icon">🏆</div>
+        <h3>Big Bash Mode</h3>
+        <p>One BBL club, 10 minutes, name anyone who's ever played for them. Plus Big Bash Classic and Blitz.</p>
+      </div>
+      <div class="mode-card mode-card-cricket">
+        <span class="showcase-tag">New</span>
+        <div class="icon">🎯</div>
+        <h3>Test Match Classic</h3>
+        <p>Australian Test players with 40 caps or fewer since 1998 — the more obscure, the more it's worth. Race to 500.</p>
+      </div>
+      <div class="mode-card mode-card-cricket">
+        <span class="showcase-tag">New</span>
+        <div class="icon">👑</div>
+        <h3>Cricket God Mode</h3>
+        <p>Pick Test, ODI or T20 and name Aussie batters from their runs and average. 5 turns to hit 300.</p>
+      </div>
+      <div class="mode-card mode-card-cricket">
+        <span class="showcase-tag">New</span>
+        <div class="icon">🔥</div>
+        <h3>Historic</h3>
+        <p>One real Test series a day — think the 2005 Ashes — and name everyone who played in it.</p>
+      </div>
+    </div>
+    <div class="fact-card" id="cricketFactCard">
+      <span class="fact-label">🏏 Obscure Cricket Fact of the Day</span>
+      <p class="fact-text" id="cricketFactText"></p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="ruckpass">
+  <div class="wrap">
+    <h2>Ruck Pass</h2>
+    <p class="lede">A one-off unlock for anyone who wants a bit more breathing room — one pass covers rugby league and cricket.</p>
+    <div class="pass-card">
+      <h3>🎟️ One-off unlock</h3>
+      <ul>
+        <li>More turns in Rugby League God and Cricket God Mode</li>
+        <li>More strikes in Classic, RLWC, League Legend, State of Origin, Ruck Trivia, Test Match Classic and Big Bash Mode</li>
+        <li>Hints unlocked in every mode — even the ones with no suggestions</li>
+      </ul>
+      <a class="pass-cta" href="https://ko-fi.com/s/fc0695c765" target="_blank" rel="noopener">Get a Ruck Pass</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="wrap">
+    <h2>Add It to Your Home Screen</h2>
+    <p class="lede">No app store, no download — just a tap, and it sits on your phone like any other app.</p>
+    <div class="steps">
+      <div class="step-col">
+        <h4>📱 iPhone</h4>
+        <ol>
+          <li>Open the game in Safari</li>
+          <li>Tap the Share icon</li>
+          <li>Tap "Add to Home Screen"</li>
+        </ol>
+      </div>
+      <div class="step-col">
+        <h4>🤖 Android</h4>
+        <ol>
+          <li>Open the game in Chrome</li>
+          <li>Tap the ⋮ menu</li>
+          <li>Tap "Add to Home screen" / "Install app"</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="wrap" style="text-align:center">
+    <h2>Follow Along</h2>
+    <p class="lede">New challenges, new modes and the odd argument about who really counts as obscure.</p>
+    <div class="pill-row">
+      <a class="pill-link" href="https://www.instagram.com/theobscurityleaguegame" target="_blank" rel="noopener">📸 Instagram</a>
+      <a class="pill-link" href="https://www.facebook.com/share/1CDbZX6c3M/" target="_blank" rel="noopener">👍 Facebook</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <a class="cta" href="game.html" style="margin-bottom:26px">🏉 Play Now</a>
+  <p class="credit" style="margin-top:26px">
+    Player data from <a href="https://www.rugbyleagueproject.org" target="_blank" rel="noopener">Rugby League Project</a>.
+    Spot an issue, or want something removed? <a href="mailto:Joey.alchin1@gmail.com">Email Joey</a>.<br>
+    Enjoying the game? <a href="https://ko-fi.com/theobscurityleague#checkoutModal" target="_blank" rel="noopener">Buy it a coffee on Ko-fi ☕</a>.<br>
+    Presented by <a href="https://gibsoncountrystylejerky.com" target="_blank" rel="noopener sponsored">Gibson Country Style Jerky</a> and <a href="https://www.instagram.com/fridayfatburgers?rpxt=aGVubDZobXVnZTJq" target="_blank" rel="noopener sponsored">Friday Fat Burgers</a>.
+  </p>
+  <div class="brandline">The Obscurity League · The Ruck Infringement Podcast Presents</div>
+</footer>
+
+<script>
+(function(){
+  var FACTS = [
+  "St George won 11 straight premierships from 1956 to 1966 — still an equal world record for any sporting competition, shared only with Bayern Munich.",
+  "The first-ever State of Origin match was played on 8 July 1980 at Lang Park. Queensland won 20–10, led by captain-coach Arthur Beetson — who'd played 18 games for NSW before switching sides under the new eligibility rules.",
+  "Rugby league only exists because of an argument in a hotel. In 1895, northern English clubs split from the Rugby Football Union at the George Hotel in Huddersfield — the fight wasn't over how the game was played, but over paying players for wages lost while injured or touring.",
+  "The six-tackle rule is newer than most people think — it only replaced the four-tackle rule in 1971.",
+  "Wests Tigers were born in 1999 from a 50/50 merger of Balmain and Western Suburbs. Western Suburbs' rough final season meant they supplied just six of the joint venture's first 25 players.",
+  "South Sydney were axed from the NRL at the end of 1999. It took a Federal Court appeal — and years of public pressure — before they were reinstated for the 2002 season.",
+  "Melbourne Storm's 2007 and 2009 premierships were stripped in 2010 after a salary cap scandal, along with three minor premierships and a World Club Challenge title.",
+  "Golden point wasn't introduced until 2003 — and it took until 2015 for a grand final to actually be decided by one, when Johnathan Thurston's field goal won the Cowboys their first-ever premiership.",
+  "Cameron Smith holds the all-time NRL games record with 430 appearances — every single one of them for Melbourne Storm, across 19 seasons.",
+  "The New Zealand Warriors have made two grand finals, in 2002 and 2011, and lost both. They've never won a premiership.",
+  "Sydney Roosters' 82–12 demolition of North Queensland in 2026 is the highest score of the NRL era.",
+  "The video referee system known as “The Bunker” only launched in February 2016 — before that, reviews were left to whoever was on duty at the ground that day.",
+  "The shoulder charge — legal and common for over a century — was outlawed from Round 6 of the 2013 season in the name of player safety.",
+  "“Six again” replaced the penalty for ruck infringements in 2020. Instead of a penalty, referees just reset the tackle count to six and play goes on.",
+  "Papua New Guinea is widely cited as the only country in the world with rugby league as its national sport. From 2028, it'll have its own NRL team — the PNG Chiefs.",
+  "Australia's first overseas rugby league tour, in 1908, saw the Kangaroos sail to England on the RMS Macedonia — training by working as stokers in the ship's boiler room to stay fit for the voyage.",
+  "That same 1908 touring squad brought a live kangaroo mascot to England — it sailed over separately, on a different ship, arriving just in time for the fifth match of the tour.",
+  "Mal Meninga is the only player ever selected for four Kangaroo Tours (1982, 1986, 1990, 1994) — and the only one to captain two of them.",
+  "The 1965 St George Grand Final — the ninth of their 11 straight premierships — drew 78,056 fans to the SCG and doubled as Immortal Norm Provan's farewell match.",
+  "The 2000 NRL Grand Final between Brisbane and the Sydney Roosters drew 94,277 fans — still the third-biggest crowd ever at a rugby league match in Australia."
+];
+  function todayStr(){
+    var d=new Date();
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  var s="fact-"+todayStr(), h=0;
+  for (var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0;
+  var el=document.getElementById("factText");
+  if (el) el.textContent=FACTS[h % FACTS.length];
+
+  var CRICKET_FACTS = [
+  "Pud Thurlow played exactly one Test for Australia, in 1932. He bowled 234 balls without a wicket, then was run out for a duck at No. 11, leaving Don Bradman stranded on 299 not out.",
+  "Don Bradman needed just four runs in his final Test innings to finish with a career average of 100. He was bowled for a duck by Eric Hollies at The Oval in 1948, and ended on 99.94.",
+  "Both of cricket's tied Tests involved Australia: the first at the Gabba in December 1960 against the West Indies, the second in Madras in 1986 against India.",
+  "The first Test ever played was in Melbourne in March 1877. Charles Bannerman scored 165 retired hurt for Australia, who won by 45 runs.",
+  "The Ashes began as a joke. After Australia beat England at The Oval in 1882, the Sporting Times ran a mock obituary for English cricket, saying the body would be cremated and the ashes taken to Australia.",
+  "The first one-day international was a rescue job. The 1971 Melbourne Test was washed out, so Australia and England played a 40-over-a-side match instead on 5 January.",
+  "In 1981 Trevor Chappell rolled the last ball of a one-day game underarm along the MCG pitch, on his brother Greg's orders, so New Zealand couldn't hit the six they needed to tie.",
+  "The Timeless Test in Durban in 1939 was abandoned as a draw after ten days, because England had to leave to catch their boat home. They were 42 runs short of victory.",
+  "Shane Warne's first ball in Ashes cricket, at Old Trafford in 1993, spun a long way to bowl Mike Gatting. It became known as the Ball of the Century.",
+  "In December 2006 Adam Gilchrist hit a Test century off just 57 balls against England at Perth, one of the fastest hundreds in Test history.",
+  "Sydney Thunder were bowled out for 15 against the Adelaide Strikers in December 2022, the lowest total in Big Bash history. Five of their batters made ducks.",
+  "Don Bradman scored 452 not out for New South Wales against Queensland at the SCG in January 1930, then a world-record first-class score.",
+  "Australia has had around 70 one-Test wonders, players picked for a single Test and never selected again.",
+  "The Bodyline series of 1932-33 saw England's Harold Larwood bowl fast, short-pitched deliveries at the batters' bodies, and led to a diplomatic row between the two countries."
+];
+  var cs="cricketfact-"+todayStr(), ch=0;
+  for (var ci=0;ci<cs.length;ci++) ch=(ch*31+cs.charCodeAt(ci))>>>0;
+  var cel=document.getElementById("cricketFactText");
+  if (cel) cel.textContent=CRICKET_FACTS[ch % CRICKET_FACTS.length];
+})();
+</script>
+</body>
+</html>
