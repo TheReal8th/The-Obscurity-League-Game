@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Obscurity League Stats</title>
+<style>body{background:#0b1730;color:#fff;font:15px system-ui,sans-serif;margin:0;padding:16px}h1{font-size:20px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{padding:8px 6px;border-bottom:1px solid #26385f;text-align:right}th:first-child,td:first-child{text-align:left}th{color:#f5c542;font-size:12px}.w{overflow-x:auto}p{color:#9fb0d0}</style></head><body>
+<h1>📊 Obscurity League – daily activity</h1><p id="m">Loading…</p><div class="w"><table id="t"></table></div>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+var cfg={
+  apiKey: "AIzaSyAtt6dlujHhjs83Ut8vv3Wufh4th6e5pQE",
+  authDomain: "the-obscurity-league.firebaseapp.com",
+  projectId: "the-obscurity-league",
+  storageBucket: "the-obscurity-league.firebasestorage.app",
+  messagingSenderId: "1079141929231",
+  appId: "1:1079141929231:web:84da2f10c9cfc8e02eee7a"
+};
+firebase.initializeApp(cfg);var db=firebase.firestore();
+var cols=["open","new_user","from_link","start_rugby_daily","start_rugby_trivia","start_cricket_trivia","td_win","td_lose","share"];
+db.collection("analytics").get().then(function(sn){
+ var rows=[];sn.forEach(function(d){rows.push([d.id,d.data()])});
+ rows.sort(function(a,b){return a[0]<b[0]?1:-1});rows=rows.slice(0,21);
+ var h="<tr><th>Day</th><th>Opens</th><th>New</th><th>From link</th><th>Daily</th><th>Trivia</th><th>Cricket trivia</th><th>Trivia wins</th><th>Trivia losses</th><th>Shares</th><th>All rounds</th></tr>";
+ rows.forEach(function(r){var d=r[1],all=0;for(var k in d){if(k.indexOf("start_")===0)all+=d[k]}
+  h+="<tr><td>"+r[0]+"</td>"+cols.map(function(c){return "<td>"+(d[c]||0)+"</td>"}).join("")+"<td>"+all+"</td></tr>"});
+ document.getElementById("t").innerHTML=h;document.getElementById("m").textContent=rows.length?"Last "+rows.length+" days (counts only, no personal data).":"No data yet.";
+}).catch(function(e){document.getElementById("m").textContent="Can't read stats yet - add the Firestore rule first. ("+e.code+")"});
+</script></body></html>
