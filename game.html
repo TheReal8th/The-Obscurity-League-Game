@@ -1740,8 +1740,36 @@ var ACHIEVEMENTS=[
   {id:"crickblitz10",icon:"⚡", title:"Powerplay",        desc:"Name 10+ players in a single cricket Blitz round"},
   {id:"capwonder",   icon:"🧢", title:"One-Cap Wonder",   desc:"Correctly name a cricketer with just 1 game or Test"},
   {id:"allrounder",  icon:"🏆", title:"All-Rounder",      desc:"Win Classic in rugby league and Test Match Classic in cricket"},
-  {id:"fullsquad",   icon:"📋", title:"Full Squad",       desc:"Name the whole squad in a Daily Challenge or Historic series"}
+  {id:"fullsquad",   icon:"📋", title:"Full Squad",       desc:"Name the whole squad in a Daily Challenge or Historic series"},
+  {id:"pts5k",       icon:"💰", title:"Five Grand",       desc:"Reach 5,000 lifetime points"},
+  {id:"pts10k",      icon:"💎", title:"Ten Grand",        desc:"Reach 10,000 lifetime points"},
+  {id:"streak3",     icon:"🎩", title:"Hat-Trick",        desc:"Play the Daily Challenge 3 days in a row"},
+  {id:"streak100",   icon:"🗿", title:"Century Streak",   desc:"Play the Daily Challenge 100 days in a row"},
+  {id:"gfplay",      icon:"🏟️", title:"Grand Final Day",  desc:"Name a player in a Grand Final Daily Challenge"},
+  {id:"gfsquad",     icon:"🏆", title:"Grand Final Perfect", desc:"Name every player in a Grand Final Daily Challenge"},
+  {id:"warera",      icon:"📼", title:"War Correspondent", desc:"Name a player from the 1996\u201397 Super League war era in Classic"},
+  {id:"legends5",    icon:"🌠", title:"Legend Collector", desc:"Name 5 different Immortals or Cricket Legends (across all games)"},
+  {id:"sharer",      icon:"📣", title:"Spread the Word",  desc:"Share your score or stats with a mate"},
+  {id:"onegame25",   icon:"🔎", title:"Obscurity Hunter", desc:"Name 25 genuine 1-game players (across all games)"},
+  {id:"rounds100",   icon:"💯", title:"Century of Rounds", desc:"Play 100 rounds across all modes"},
+  {id:"bothcodes",   icon:"🔀", title:"Both Codes",       desc:"Score points in both rugby league and cricket"},
+  {id:"biground",    icon:"🚀", title:"Big Round",        desc:"Score 1,000+ points in a single round"},
+  {id:"nightowl",    icon:"🦉", title:"Night Owl",        desc:"Score points between midnight and 5am"},
+  {id:"earlybird",   icon:"🐦", title:"Early Bird",       desc:"Score points between 5am and 7am"}
 ];
+/* ---------- Ranks: lifetime points turn into a title, so there's always a next step to chase ---------- */
+var RANKS=[[0,"Rookie"],[250,"Reserve Grader"],[1000,"First Grader"],[2500,"State of Origin Rep"],[5000,"Kangaroo"],[10000,"Immortal in Waiting"],[25000,"Obscurity Legend"]];
+function rankFor(pts){ var r=RANKS[0]; RANKS.forEach(function(x){ if (pts>=x[0]) r=x; }); return r; }
+function nextRank(pts){ for (var i=0;i<RANKS.length;i++){ if (pts<RANKS[i][0]) return RANKS[i]; } return null; }
+function storeSetAdd(key,val){ var a; try{ a=JSON.parse(store.get(key)||"[]"); }catch(e){ a=[]; } if (a.indexOf(val)===-1){ a.push(val); store.set(key,JSON.stringify(a)); } return a.length; }
+function storeSetHas(key,val){ try{ return JSON.parse(store.get(key)||"[]").indexOf(val)!==-1; }catch(e){ return false; } }
+function streakBonus(n){   // one-off lifetime-point bonuses for keeping the Daily streak alive
+  var amt={3:100,7:250,14:500,30:1000,100:5000}[n];
+  if (!amt || storeSetHas("ol_streak_bonus",String(n))) return;
+  storeSetAdd("ol_streak_bonus",String(n));
+  addLifetimePts(amt);
+  showToast({icon:"🔥", title:n+"-day streak bonus: +"+amt+" pts"});
+}
 function getUnlocked(){ try{ return JSON.parse(store.get("ol_achievements")||"[]"); }catch(e){ return []; } }
 function unlockAchievement(id){
   var list=getUnlocked();
@@ -1761,9 +1789,13 @@ function showToast(a){
   window.__toastTimer=setTimeout(function(){ t.hidden=true; },2900);
 }
 function addLifetimePts(n){
-  var v=parseInt(store.get("ol_lifetime")||"0",10)+n;
+  var prev=parseInt(store.get("ol_lifetime")||"0",10), v=prev+n;
   store.set("ol_lifetime",String(v));
   if (v>=1000) unlockAchievement("highroller");
+  if (v>=5000) unlockAchievement("pts5k");
+  if (v>=10000) unlockAchievement("pts10k");
+  var r0=rankFor(prev), r1=rankFor(v);
+  if (r1[0]>r0[0]) setTimeout(function(){ showToast({icon:"🎖️", title:"Rank up: "+r1[1]}); },1800);
   syncGlobalScore(v);
 }
 /* Global leaderboard: one row per device (keyed by the stable uid above), always holding that
@@ -1846,6 +1878,8 @@ function renderModeTileBests(){
 function bumpPlayed(key){
   var o; try{ o=JSON.parse(store.get("ol_played")||"{}"); }catch(e){ o={}; }
   o[key]=(o[key]||0)+1; store.set("ol_played",JSON.stringify(o));
+  var tot=0; for (var k in o) tot+=o[k];
+  if (tot>=100) unlockAchievement("rounds100");
 }
 /* Trivia of the Day history is rebuilt from the per-day result keys already saved on this device
    (ol_triviaday_YYYY-MM-DD / ol_ctriviaday_YYYY-MM-DD = "win"|"lose"), so past plays count too. */
@@ -1902,17 +1936,19 @@ function renderStatsPanel(){
   card("🏏 Cricket Trivia",[["Played",d.c.w+d.c.l],["Win rate",pct(d.c.w,d.c.l)],["Streak",d.cStreak],["Best streak",Math.max(d.c.best,d.cStreak)]]);
   card("🔥 Daily Challenge",[["Streak",d.dStreak],["Best streak",d.dBest]]);
   card("🏆 Personal bests",[["Blitz",d.blitz?d.blitz+" pts":"—"],["League Legend",d.hc?d.hc+" pts":"—"],["God Mode",d.godTurns?d.godTurns+(d.godTurns===1?" turn":" turns"):(d.godPts?d.godPts+" pts":"—")]]);
-  card("📊 Overall",[["Lifetime points",d.lifetime],["Rounds played",d.total],["Favourite mode",d.top?modeNice(d.top):"—"],["Achievements",d.ach+"/"+ACHIEVEMENTS.length]],true);
+  var nr=nextRank(d.lifetime);
+  card("📊 Overall",[["Rank",rankFor(d.lifetime)[1]+(nr?" · "+(nr[0]-d.lifetime)+" pts to "+nr[1]:"")],["Lifetime points",d.lifetime],["Rounds played",d.total],["Favourite mode",d.top?modeNice(d.top):"—"],["Achievements",d.ach+"/"+ACHIEVEMENTS.length]],true);
 }
 function shareStats(){
   var d=statsData(), L=["📊 My Obscurity League stats"];
   if (d.r.w+d.r.l) L.push("🧠 Trivia of the Day: "+pct(d.r.w,d.r.l)+" ("+d.r.w+"/"+(d.r.w+d.r.l)+"), best streak "+Math.max(d.r.best,d.rStreak));
   if (d.c.w+d.c.l) L.push("🏏 Cricket Trivia: "+pct(d.c.w,d.c.l)+" ("+d.c.w+"/"+(d.c.w+d.c.l)+"), best streak "+Math.max(d.c.best,d.cStreak));
   if (d.dBest) L.push("🔥 Best Daily streak: "+d.dBest);
+  L.push("🎖️ Rank: "+rankFor(d.lifetime)[1]);
   L.push("🏆 "+d.lifetime+" lifetime pts · "+d.ach+"/"+ACHIEVEMENTS.length+" achievements");
   L.push("Can you beat me? "+location.origin+location.pathname.replace(/[^\/]*$/,""));
   var text=L.join("\n");
-  track("share_stats");
+  track("share_stats"); unlockAchievement("sharer");
   if (navigator.share){ navigator.share({text:text}).catch(function(){}); return; }
   try{ navigator.clipboard.writeText(text).then(function(){ var b=$("shareStatsBtn"), o=b.textContent; b.textContent="✅ Copied!"; setTimeout(function(){ b.textContent=o; },1800); }); }catch(e){}
 }
@@ -2803,8 +2839,11 @@ function startRound(team, keepGodTurns){
     $("teamVal").textContent=team;
     if (S.sport!=="cricket"){   // cricket's Historic isn't a daily any more, so no streak
       var streakNow=updateDailyStreak();   // counts this as today's Daily play — see updateDailyStreak's own comment
+      if (streakNow>=3) unlockAchievement("streak3");
       if (streakNow>=7) unlockAchievement("streak7");
       if (streakNow>=30) unlockAchievement("streak30");
+      if (streakNow>=100) unlockAchievement("streak100");
+      streakBonus(streakNow);
     }
   } else if (S.mode==="god"){
     if (S.sport==="cricket"){
@@ -2907,7 +2946,7 @@ function endRound(reason){
       maybeUpdateCreatorScore("daily", {pts:S.roundPts, meta:dMeta, date:Date.now()});
     }
     if (reason==="complete"){
-      sndWin(); unlockAchievement("fullsquad");
+      sndWin(); unlockAchievement("fullsquad"); if (isGFSquad()) unlockAchievement("gfsquad");
       say("🏆 Full squad named! "+S.found.length+" players, "+S.roundPts+" pts."+(S.sport==="cricket" ? " Tap Team for another series." : " Come back tomorrow for a new club and season."),"ok");
     } else if (reason==="time"){
       say("Time's up! "+S.found.length+(S.found.length===1?" player":" players")+", "+S.roundPts+" pts. Here's who you missed.","info");
@@ -3048,6 +3087,7 @@ function submit(){
     say("⭐ "+(S.sport==="cricket"?"CRICKET LEGEND":"IMMORTAL")+" — "+immName+" · +"+IMMORTAL_BONUS,"ok");
     addLifetimePts(IMMORTAL_BONUS);
     unlockAchievement("immortal");
+    if (storeSetAdd("ol_legends",ikey)>=5) unlockAchievement("legends5");
     inp.value="";
     renderList(); renderStats();
     if (S.mode==="classic" && S.total>=WIN_SCORE) win();
@@ -3134,7 +3174,16 @@ function submit(){
   say(p.name+((p.team && S.mode!=="daily")?" ("+p.team+")":"")+" · "+gamesText(p)+" · +"+pts,"ok");
   addLifetimePts(pts);
   unlockAchievement("first");
-  if (gm(p)===1 && !isGFSquad()) unlockAchievement(S.sport==="cricket" ? "capwonder" : "onegamer");
+  if (isGFSquad()) unlockAchievement("gfplay");
+  if (S.mode==="classic" && S.sport!=="cricket" && S.era && String(S.era).indexOf("1996")===0) unlockAchievement("warera");
+  if (storeSetAdd("ol_sports",S.sport==="cricket"?"cricket":"rugby")>=2) unlockAchievement("bothcodes");
+  if (S.roundPts>=1000) unlockAchievement("biground");
+  var hr=new Date().getHours(); if (hr<5) unlockAchievement("nightowl"); else if (hr<7) unlockAchievement("earlybird");
+  if (gm(p)===1 && !isGFSquad()){
+    unlockAchievement(S.sport==="cricket" ? "capwonder" : "onegamer");
+    var ogN=parseInt(store.get("ol_onegamers")||"0",10)+1; store.set("ol_onegamers",String(ogN));
+    if (ogN>=25) unlockAchievement("onegame25");
+  }
   if (S.mode==="hardcore" && gm(p)>100 && S.sport!=="cricket") unlockAchievement("legend");
   if (S.mode==="rlwc" && p.team){
     var seenN; try{ seenN=JSON.parse(store.get("ol_rlwc_nations")||"[]"); }catch(e){ seenN=[]; }
@@ -3247,7 +3296,7 @@ function buildShareText(roomId){
   return "The Obscurity League "+(S.sport==="cricket"?"🏏":"🏉")+"\n"+line+"\nBeat that if you can 😏\nPlay: "+url;
 }
 function shareScore(){
-  track("share");
+  track("share"); unlockAchievement("sharer");
   var roomId = fireDb ? Math.random().toString(36).slice(2,8) : null;
   var text=buildShareText(roomId);
   if (roomId){
