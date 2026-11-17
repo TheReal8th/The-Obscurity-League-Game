@@ -1393,7 +1393,7 @@ function updateTriviaDayStreak(won){
 /* ---------- Data ---------- */
 var ERAS = [[1996,1997],[1998,2000],[2001,2009],[2010,2019],[2020,2026]];
 function eraLabel(y){
-  for (var i=0;i<ERAS.length;i++) if (y>=ERAS[i][0] && y<=ERAS[i][1]) return ERAS[i][0]+"–"+ERAS[i][1];
+  for (var i=0;i<ERAS.length;i++) if (y>=ERAS[i][0] && y<=ERAS[i][1]) return ERAS[i][0]+"–"+ERAS[i][1]+(ERAS[i][0]===1996?" Super League era":"");
   return null;
 }
 /* Rows are era,team,player,games  OR  year,team,player,games (one row per season).
@@ -1747,7 +1747,7 @@ var ACHIEVEMENTS=[
   {id:"streak100",   icon:"🗿", title:"Century Streak",   desc:"Play the Daily Challenge 100 days in a row"},
   {id:"gfplay",      icon:"🏟️", title:"Grand Final Day",  desc:"Name a player in a Grand Final Daily Challenge"},
   {id:"gfsquad",     icon:"🏆", title:"Grand Final Perfect", desc:"Name every player in a Grand Final Daily Challenge"},
-  {id:"warera",      icon:"📼", title:"War Correspondent", desc:"Name a player from the 1996\u201397 Super League war era in Classic"},
+  {id:"warera",      icon:"📼", title:"Super League Spotter", desc:"Name a player from the 1996\u201397 Super League era in Classic"},
   {id:"legends5",    icon:"🌠", title:"Legend Collector", desc:"Name 5 different Immortals or Cricket Legends (across all games)"},
   {id:"sharer",      icon:"📣", title:"Spread the Word",  desc:"Share your score or stats with a mate"},
   {id:"onegame25",   icon:"🔎", title:"Obscurity Hunter", desc:"Name 25 genuine 1-game players (across all games)"},
