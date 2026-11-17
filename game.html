@@ -1167,6 +1167,31 @@ var IMMORTALS = (function(){
   names.forEach(function(n){ map[norm(n)]=n; });
   return map;
 })();
+/* Cricket Legends: the cricket twin of the Immortals — five all-time greats from each of the major Test nations
+   (Australia, New Zealand, India, Sri Lanka, Pakistan, South Africa, West Indies, England). Most debuted long before
+   the 1998 dataset or never played for Australia, so they're never in any squad; naming one in Test Match Classic
+   banks the same 300pt once-per-game bonus. Entry = [display name, extra accepted spellings]; the full name is
+   always accepted, plus any listed surname/nickname (only where that's unambiguous across the whole list). */
+var CRICKET_LEGENDS = {
+  "Australia":[["Don Bradman",["bradman"]],["Shane Warne",["warne"]],["Ricky Ponting",["ponting"]],["Glenn McGrath",["mcgrath"]],["Adam Gilchrist",["gilchrist"]]],
+  "New Zealand":[["Richard Hadlee",["hadlee"]],["Kane Williamson",["williamson"]],["Brendon McCullum",["mccullum"]],["Daniel Vettori",["vettori"]],["Martin Crowe",["crowe"]]],
+  "India":[["Sachin Tendulkar",["tendulkar"]],["Virat Kohli",["kohli"]],["MS Dhoni",["dhoni","mahendra singh dhoni"]],["Kapil Dev",["kapil"]],["Sunil Gavaskar",["gavaskar"]]],
+  "Sri Lanka":[["Muttiah Muralitharan",["muralitharan","murali"]],["Kumar Sangakkara",["sangakkara"]],["Mahela Jayawardene",["jayawardene"]],["Sanath Jayasuriya",["jayasuriya"]],["Lasith Malinga",["malinga"]]],
+  "Pakistan":[["Imran Khan",["imran"]],["Wasim Akram",["wasim"]],["Javed Miandad",["miandad"]],["Waqar Younis",["waqar"]],["Inzamam-ul-Haq",["inzamam","inzamam ul haq"]]],
+  "South Africa":[["Jacques Kallis",["kallis"]],["Dale Steyn",["steyn"]],["AB de Villiers",["de villiers","abd","ab devilliers","ab de villiers"]],["Shaun Pollock",["pollock"]],["Graeme Smith",[]]],
+  "West Indies":[["Garfield Sobers",["sobers","garry sobers","gary sobers"]],["Viv Richards",["vivian richards"]],["Brian Lara",["lara"]],["Malcolm Marshall",[]],["Curtly Ambrose",["ambrose"]]],
+  "England":[["Jack Hobbs",["hobbs"]],["Ian Botham",["botham","beefy"]],["Joe Root",[]],["James Anderson",["jimmy anderson"]],["Alastair Cook",[]]]
+};
+var CRICKET_IMMORTALS = (function(){
+  var map={};
+  Object.keys(CRICKET_LEGENDS).forEach(function(nation){
+    CRICKET_LEGENDS[nation].forEach(function(e){
+      map[norm(e[0])]=e[0];
+      e[1].forEach(function(a){ map[norm(a)]=e[0]; });
+    });
+  });
+  return map;
+})();
 function lev(a,b){
   if (a===b) return 0;
   var prev=[],cur=[],i,j;
@@ -1691,7 +1716,7 @@ var ACHIEVEMENTS=[
   {id:"legend",      icon:"🌟", title:"Legend Spotted",   desc:"Correctly name a real legend in League Legend"},
   {id:"triple",      icon:"🎯", title:"Triple Threat",    desc:"Play a round in all three modes"},
   {id:"highroller",  icon:"🔥", title:"High Roller",      desc:"Reach 1000 lifetime points"},
-  {id:"immortal",    icon:"⭐", title:"Immortalised",     desc:"Name a Rugby League Immortal for the 300pt bonus"},
+  {id:"immortal",    icon:"⭐", title:"Immortalised",     desc:"Name a Rugby League Immortal or Cricket Legend for the 300pt bonus"},
   {id:"godwin",      icon:"👑", title:"Rugby League God", desc:"Hit 300 points within 5 turns in God Mode"},
   {id:"godflawless", icon:"💯", title:"Flawless",         desc:"Win God Mode without a single wrong guess"},
   {id:"worldly",     icon:"🌏", title:"Worldly",          desc:"Correctly name players from 5 different nations in RLWC Mode (across all games)"},
@@ -2283,7 +2308,7 @@ function renderList(){
     }
     var l=document.createElement("span"); l.textContent=p.name+" ";
     var sm=document.createElement("small");
-    sm.textContent = p.immortal ? "⭐ Rugby League Immortal" : ((p.team && S.mode!=="daily")?p.team+" · "+gamesText(p):gamesText(p));
+    sm.textContent = p.immortal ? (S.sport==="cricket" ? "⭐ Cricket Legend" : "⭐ Rugby League Immortal") : ((p.team && S.mode!=="daily")?p.team+" · "+gamesText(p):gamesText(p));
     l.appendChild(sm);
     var r=document.createElement("span"); r.className="pts"; r.textContent="+"+pts;
     li.appendChild(l); li.appendChild(r); ul.appendChild(li);
@@ -3012,7 +3037,7 @@ function submit(){
     return;
   }
   if (!raw) return;
-  var immName = S.mode==="classic" ? IMMORTALS[norm(raw)] : null;   // Immortals are a Classic-only bonus
+  var immName = S.mode==="classic" ? (S.sport==="cricket" ? CRICKET_IMMORTALS : IMMORTALS)[norm(raw)] : null;   // Immortals (rugby) / Cricket Legends are a Classic-only bonus
   if (immName){
     var ikey="immortal:"+norm(raw);
     if (S.usedNorms[ikey]){ sndSoft(); say(immName+" — you've already banked that Immortal bonus this game.","info"); inp.value=""; return; }
@@ -3020,7 +3045,7 @@ function submit(){
     S.found.push({name:immName, norm:ikey, immortal:true});
     S.roundPts+=IMMORTAL_BONUS; S.total+=IMMORTAL_BONUS; S.answers++;
     sndAchieve();
-    say("⭐ IMMORTAL — "+immName+" · +"+IMMORTAL_BONUS,"ok");
+    say("⭐ "+(S.sport==="cricket"?"CRICKET LEGEND":"IMMORTAL")+" — "+immName+" · +"+IMMORTAL_BONUS,"ok");
     addLifetimePts(IMMORTAL_BONUS);
     unlockAchievement("immortal");
     inp.value="";
