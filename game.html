@@ -105,6 +105,17 @@ h1{
     linear-gradient(135deg,#0f4a52,#08323b) padding-box,
     linear-gradient(135deg,#ffd23f,#ffd23f 55%,#ffd23f) border-box;
 }
+.mode-tile-sl{
+  border:3px solid transparent;border-radius:22px;
+  background:
+    linear-gradient(#06303a,#06303a) padding-box,
+    linear-gradient(135deg,#ff5fa2,#ffb347 55%,#ff5fa2) border-box;
+}
+.mode-tile-sl.active{
+  background:
+    linear-gradient(135deg,#0f4a52,#08323b) padding-box,
+    linear-gradient(135deg,#ff5fa2,#ffb347 55%,#ff5fa2) border-box;
+}
 .mode-tile-blitz{
   border:3px solid transparent;border-radius:22px;
   background:
@@ -675,6 +686,11 @@ h1{background:linear-gradient(100deg,#ffd23f 0%,#ff5fa8 55%,#ffffff 100%);-webki
       <button class="mode-tile mode-tile-classic" id="modeTileClassic" data-mode="classic" type="button">
         <span class="mode-tile-label" id="modeTileClassicLabel">Classic</span>
         <span class="mode-tile-sub" id="modeTileClassicSub">No timer. Race to 500.</span>
+      </button>
+      <button class="mode-tile mode-tile-sl" id="modeTileSL" data-mode="classic" data-sl="1" type="button">
+        <span class="new-badge mode-tile-badge">New</span>
+        <span class="mode-tile-label">Super League Era</span>
+        <span class="mode-tile-sub">1995–97. Name the war-era players.</span>
       </button>
       <button class="mode-tile mode-tile-blitz" id="modeTileBlitz" data-mode="blitz" type="button">
         <span class="mode-tile-label">Blitz</span>
@@ -2372,9 +2388,9 @@ function renderEraOptions(){
 function renderMode(){
   var blitz=S.mode==="blitz", hardcore=S.mode==="hardcore", daily=S.mode==="daily", god=S.mode==="god", rlwc=S.mode==="rlwc", origin=S.mode==="origin", trivia=S.mode==="trivia", triviaday=S.mode==="triviaday";
   Array.prototype.forEach.call(document.querySelectorAll(".mode-tile"),function(btn){
-    btn.classList.toggle("active", btn.dataset.mode===S.mode);
+    btn.classList.toggle("active", btn.dataset.mode===S.mode && (btn.dataset.sl==="1")===!!S.sl);
   });
-  $("eraPill").hidden=S.sport==="cricket"||hardcore||daily||god||rlwc||origin||trivia||triviaday;   // all span every era (or in RLWC/Origin/Trivia's case, caps/games since 1998), so there's nothing to pick; cricket's BBL data has one era too
+  $("eraPill").hidden=S.sport==="cricket"||S.sl||hardcore||daily||god||rlwc||origin||trivia||triviaday;   // all span every era (or in RLWC/Origin/Trivia's case, caps/games since 1998), so there's nothing to pick; cricket's BBL data has one era too
   $("teamPill").hidden=blitz||origin;   // Origin picks its "team" from the state toggle instead, no random draw
   $("teamPillLabel").textContent = rlwc ? "Nation" : (trivia||triviaday||cricketGod) ? "Clue" : (S.sport==="cricket" && S.mode==="classic") ? "Era" : "Team";   // reuse the team pill's markup/click-to-draw, just relabelled
   $("teamPill").setAttribute("aria-label", rlwc ? "Draw a random nation" : (trivia||triviaday) ? "Draw a new clue" : "Draw a random team");
@@ -3533,7 +3549,15 @@ $("eraSel").addEventListener("change",function(e){
 });
 /* Mode is chosen from the 6-square mode-grid (replaces the old dropdown) — every tile wires
    through this one function so the message/clear/render logic stays in one place. */
+function enterSuperLeague(){
+  if (S.sport==="cricket" || !S.data || !S.data.eras) return;
+  var e=eraLabel(1995);
+  if (S.data.eras.indexOf(e)===-1) return;
+  S.sl=true; S.era=e; clearRound(); renderMode();
+  say("Super League Era: names from the 1995\u201397 ARL and Super League seasons only. Tap Team to draw a club, then name players with "+CLASSIC_MAX_GAMES+" "+unit()+" or fewer. Race to "+WIN_SCORE+" points.","info");
+}
 function setMode(mode){
+  S.sl=false;
   if (S.sport==="cricket"){
     var cd = (mode==="classic") ? TEST_DATA : (mode==="daily") ? HISTORIC_DATA : CRICKET_DATA;
     if (cd){ S.data=cd; S.era=cd.eras[0]||""; }
@@ -3572,10 +3596,10 @@ function setMode(mode){
    Swaps which parsed dataset S.data points to and which games-cap Classic uses, reusing every
    bit of Classic Mode's existing engine (parseData/eligible/pointsFor/renderList all just read
    S.data and CLASSIC_MAX_GAMES generically, so nothing mode-specific needed to change). */
-var CRICKET_ONLY_TILES=["modeTileRlwc","modeTileOrigin"];   // Blitz, Hardcore and God all relabelled for cricket now, instead of hidden
+var CRICKET_ONLY_TILES=["modeTileRlwc","modeTileOrigin","modeTileSL"];   // Blitz, Hardcore and God all relabelled for cricket now, instead of hidden
 function switchSport(sport){
   if (sport===S.sport) return;
-  S.sport=sport;
+  S.sl=false; S.sport=sport;
   Array.prototype.forEach.call(document.querySelectorAll(".sport-btn"),function(btn){
     btn.classList.toggle("active", btn.dataset.sport===sport);
   });
@@ -3603,8 +3627,10 @@ Array.prototype.forEach.call(document.querySelectorAll(".sport-btn"),function(bt
 });
 Array.prototype.forEach.call(document.querySelectorAll(".mode-tile"),function(btn){
   btn.addEventListener("click",function(){
-    if (btn.dataset.mode===S.mode) return;   // already selected, nothing to do
+    var wantSL = btn.dataset.sl==="1";
+    if (btn.dataset.mode===S.mode && !!S.sl===wantSL) return;   // already selected, nothing to do
     sndClick(); setMode(btn.dataset.mode);
+    if (wantSL) enterSuperLeague();
   });
 });
 $("timerSel").addEventListener("change",function(e){
